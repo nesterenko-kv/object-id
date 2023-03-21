@@ -1,0 +1,27 @@
+<Project>
+
+  <PropertyGroup>
+    <Version>1.0</Version>
+    <Company>Sigin</Company>
+    <Authors>$(Company)</Authors>
+    <Copyright>Copyright (C) Kostiantyn Nesterenko</Copyright>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <CheckEolTargetFramework>false</CheckEolTargetFramework>
+    <IsPackable>false</IsPackable>
+
+    <PackageProjectUrl>https://github.com/nesterenko-kv/object-id</PackageProjectUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <RepositoryUrl>$(PackageProjectUrl)</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>data;id;unique-identifier;object-id</PackageTags>
+  </PropertyGroup>
+
+  <!-- Disable nullability warnings on older frameworks because there is no nullability info for BCL -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0' or '$(TargetFramework)' == 'net462'">
+    <Nullable>annotations</Nullable>
+  </PropertyGroup>
+
+</Project>
