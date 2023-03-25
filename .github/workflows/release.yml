@@ -50,7 +50,6 @@ jobs:
       - name: Push to NuGet
         shell: bash
         run: |
-          rm ./artifacts/*.symbols.nupkg
           PATH_TO_PACKAGE=$(readlink -f ./artifacts/*.nupkg)
           dotnet nuget push "$PATH_TO_PACKAGE" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
 
