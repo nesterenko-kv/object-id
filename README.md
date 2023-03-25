@@ -1,10 +1,22 @@
 # Sigin.ObjectId
 
+[![Version](https://img.shields.io/nuget/v/Sigin.ObjectId.svg)](https://nuget.org/packages/Sigin.ObjectId)
+
 The `ObjectId` class is a C# implementation of the ObjectId data type used in MongoDB databases. An ObjectId is a 12-byte unique identifier that consists of a timestamp, machine identifier, process ID, and increment. It is commonly used as a primary key in MongoDB collections and is guaranteed to be unique within a single MongoDB instance.
 
-## Installation
+## Install
 
-TODO
+.NET CLI:
+
+```bash
+dotnet add package Sigin.ObjectId
+```
+
+Package Manager:
+
+```powershell
+Install-Package Sigin.ObjectId
+```
 
 ## Usage
 
