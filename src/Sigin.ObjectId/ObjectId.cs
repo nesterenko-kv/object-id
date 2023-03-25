@@ -46,7 +46,14 @@ namespace Sigin.ObjectId
         private static readonly uint* TableToHex = InternalHexTables.TableToHex;
         private static readonly byte* TableFromHexToBytes = InternalHexTables.TableFromHexToBytes;
 
+        /// <summary>
+        ///     Represents the minimum possible value of an <see cref="ObjectId"/>.
+        /// </summary>
         public static readonly ObjectId Min = NewObjectId(timestamp: 0, random: 0, increment: 0);
+
+        /// <summary>
+        ///     Represents the maximum possible value of an <see cref="ObjectId"/>.
+        /// </summary>
         public static readonly ObjectId Max = NewObjectId(timestamp: 0xFFFFFFFF, random: 0xFFFFFFFFFF, increment: 0xFFFFFF);
 
         //DateTime.UnixEpoch
@@ -149,8 +156,7 @@ namespace Sigin.ObjectId
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ObjectId" /> structure by using the value represented by the specified
-        ///     read-only span of
-        ///     bytes.
+        ///     read-only span of bytes.
         /// </summary>
         /// <param name="bytes">
         ///     A read-only span containing the bytes representing the <see cref="ObjectId" />. The span must be
@@ -195,6 +201,14 @@ namespace Sigin.ObjectId
             _increment2 = Unsafe.Add(ref incrementPtr, elementOffset: 0);
         }
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ObjectId" /> structure by using the value represented by the specified
+        ///     values for the timestamp, random, and increment fields.
+        /// </summary>
+        /// <param name="timestamp">A 4-byte value representing the timestamp.</param>
+        /// <param name="random">A 5-byte value representing the random value.</param>
+        /// <param name="increment">A 3-byte value representing the increment value.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if any of the input values are invalid.</exception>
         public static ObjectId NewObjectId(long timestamp, long random, int increment)
         {
             if (timestamp < 0)
@@ -630,6 +644,21 @@ namespace Sigin.ObjectId
             return ToString(format, formatProvider: null);
         }
 
+        /// <summary>
+        ///     Returns a string representation of the value of this <see cref="ObjectId" /> instance, according to the provided
+        ///     format specifier and culture-specific format information.
+        /// </summary>
+        /// <param name="format">
+        ///     A single format specifier that indicates how to format the value of this <see cref="ObjectId" />. The format
+        ///     parameter can
+        ///     be "N". If format is <see langword="null" /> or an empty string (""), "N" is used.
+        /// </param>
+        /// <param name="formatProvider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>
+        ///     The value of this <see cref="ObjectId" />, represented as a series of lowercase hexadecimal digits in the
+        ///     specified format.
+        /// </returns>
+        /// <exception cref="FormatException">Thrown if the format string is not a valid value ("N" or "n").</exception>
         public string ToString(string? format, IFormatProvider? formatProvider)
         {
             format ??= "N";
@@ -1913,12 +1942,19 @@ namespace Sigin.ObjectId
         }
 
 #if NET7_0_OR_GREATER
-    static ObjectId IMinMaxValue<ObjectId>.MaxValue => Max;
+        /// <inheritdoc cref="IMinMaxValue{TSelf}.MaxValue" />
+        static ObjectId IMinMaxValue<ObjectId>.MaxValue => Max;
 
-    static ObjectId IMinMaxValue<ObjectId>.MinValue => Min;
+        /// <inheritdoc cref="IMinMaxValue{TSelf}.MinValue" />
+        static ObjectId IMinMaxValue<ObjectId>.MinValue => Min;
 
 #endif
 
+        /// <summary>
+        ///     Generates a new, unique <see cref="ObjectId" /> by setting the timestamp to current UTC time (
+        ///     <see cref="DateTime.UtcNow" />) and generating a random value and increment.
+        /// </summary>
+        /// <returns>A new unique <see cref="ObjectId" />.</returns>
         public static ObjectId NewObjectId()
         {
             ObjectId result = default;
