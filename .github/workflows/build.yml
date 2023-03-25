@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dotnet: ["3.1.x", "5.0.x", "6.0.x", "7.0.x", "8.0.x"]
+        dotnet: ["3.1.*", "5.0.*", "6.0.*", "7.0.*", "8.0.*"]
     env:
       DOTNET_NOLOGO: true
       DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -30,24 +30,24 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup .NET Core SDK
+      - name: Setup .NET Core ${{ matrix.dotnet }}
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ matrix.dotnet }}
 
       - name: Restore dependencies
-        run: dotnet restore Build.csproj
+        run: dotnet restore ${{ github.workspace }}/Sigin.ObjectId.sln
 
       - name: Build
-        run: dotnet build Build.csproj --no-restore -c Release
+        run: dotnet build ${{ github.workspace }}/Sigin.ObjectId.sln --no-restore -configuration Release
 
-      - name: Test
-        run: dotnet test Build.csproj --no-build --verbosity normal -c Release
+      - name: Tests
+        run: dotnet test ${{ github.workspace }}/Sigin.ObjectId.sln --configuration Release --no-build
 
       - name: Pack
         if: ${{ success() && !github.base_ref }}
         run: |
-          dotnet pack src/Sigin.ObjectId/Sigin.ObjectId.csproj --no-build --verbosity normal -c Release -o artifacts/
+          dotnet pack ${{ github.workspace }}/Sigin.ObjectId.sln --no-build --verbosity normal -configuration Release --output artifacts/
 
       - name: Artifacts
         uses: actions/upload-artifact@v3
