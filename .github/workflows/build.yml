@@ -40,7 +40,7 @@ jobs:
         run: dotnet restore ${{ github.workspace }}/Sigin.ObjectId.sln
 
       - name: Build
-        run: dotnet build ${{ github.workspace }}/Sigin.ObjectId.sln --no-restore -configuration Release
+        run: dotnet build ${{ github.workspace }}/Sigin.ObjectId.sln --no-restore --configuration Release
 
       - name: Tests
         run: dotnet test ${{ github.workspace }}/Sigin.ObjectId.sln --configuration Release --no-build
@@ -48,7 +48,7 @@ jobs:
       - name: Pack
         if: ${{ success() && !github.base_ref }}
         run: |
-          dotnet pack ${{ github.workspace }}/Sigin.ObjectId.sln --no-build --verbosity normal -configuration Release --output artifacts/
+          dotnet pack ${{ github.workspace }}/Sigin.ObjectId.sln --no-build --verbosity normal --configuration Release --output artifacts/
 
       - name: Artifacts
         uses: actions/upload-artifact@v3
