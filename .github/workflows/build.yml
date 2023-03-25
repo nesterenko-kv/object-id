@@ -1,0 +1,52 @@
+name: Build
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore Build.csproj
+
+    - name: Build
+      run: dotnet build Build.csproj --no-restore -c Release
+
+    - name: Test
+      run: dotnet test Build.csproj --no-build --verbosity normal -c Release -f net6.0
+
+    - name: Pack
+      if: ${{ success() && !github.base_ref }}
+      run: |
+        dotnet pack src/Sigin.ObjectId/Sigin.ObjectId.csproj --no-build --verbosity normal -c Release -o artifacts/
+
+    - name: Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: artifacts
+        path: artifacts/**/*
