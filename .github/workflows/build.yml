@@ -46,7 +46,7 @@ jobs:
         dotnet pack src/Sigin.ObjectId/Sigin.ObjectId.csproj --no-build --verbosity normal -c Release -o artifacts/
 
     - name: Artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: artifacts
         path: artifacts/**/*
