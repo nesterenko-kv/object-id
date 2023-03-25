@@ -1,0 +1,61 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*.*.*"
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: |
+            3.1.x
+            5.0.x
+            6.0.x
+            7.0.x
+            8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ github.workspace }}/Sigin.ObjectId.sln
+
+      - name: Build
+        run: dotnet build ${{ github.workspace }}/Sigin.ObjectId.sln --no-restore --configuration Release
+
+      - name: Tests
+        run: dotnet test ${{ github.workspace }}/Sigin.ObjectId.sln --configuration Release --no-build
+
+      - name: Pack
+        if: ${{ success() && !github.base_ref }}
+        run: |
+          dotnet pack ${{ github.workspace }}/Sigin.ObjectId.sln --no-build --verbosity normal --configuration Release --output artifacts/
+
+      - name: Push to NuGet
+        shell: bash
+        run: |
+          rm ./artifacts/*.symbols.nupkg
+          PATH_TO_PACKAGE=$(readlink -f ./artifacts/*.nupkg)
+          dotnet nuget push "$PATH_TO_PACKAGE" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
+
+      - name: Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifacts
+          path: artifacts/**/*
